@@ -21,7 +21,6 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import lombok.extern.slf4j.Slf4j;
 import team.zhou.zim.httpserver.handle.HttpServerHandler;
-import team.zhou.zim.imserver.handle.ImServerHanleInitializer;
 
 /**
  * @author zhouxinghang

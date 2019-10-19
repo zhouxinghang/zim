@@ -40,6 +40,7 @@ public class ImClient {
             .handler(new ImClientHandleInitializer());
 
         try {
+            // todo 需要先登录，然后根据登录返回的连接，进行长连接
             ChannelFuture future = bootstrap.connect("127.0.0.1", nettyPort).sync();
             if (future.isSuccess()) {
                 log.info("启动 zim client 成功");

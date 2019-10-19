@@ -52,6 +52,7 @@ public class ImServerHandle extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         log.info("收到客户端消息:{}", msg);
+        // todo 根据客户端消息发送目标，将消息发送给目标 client
         super.channelRead(ctx, msg);
     }
 
@@ -59,6 +60,7 @@ public class ImServerHandle extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         log.info("与客户端:{}建立连接", ctx.channel().remoteAddress());
         ctx.writeAndFlush("客户端" + InetAddress.getLocalHost().getHostName() + "成功与服务端建立连接！ \n");
+        // todo 保存 session
         super.channelActive(ctx);
     }
 
