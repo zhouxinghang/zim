@@ -1,0 +1,15 @@
+syntax = "proto3";
+// 生成的包名
+option java_package="com.zebra.zim.common.protocol";
+//生成的java名
+option java_outer_classname = "ZIMRequestProto";
+
+message ZIMReqProto {
+
+     int32 requestId = 1;
+
+     string msg = 2;
+
+     int32 type = 3;
+
+}
