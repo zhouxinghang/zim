@@ -42,25 +42,21 @@ public class HttpServer {
             .group(BOOS, WORK)
             .channel(NioServerSocketChannel.class)
             .localAddress(new InetSocketAddress(httpPort))
+            .option(ChannelOption.SO_BACKLOG, 10240)
             .childOption(ChannelOption.SO_KEEPALIVE, true)
-            //BACKLOG用于构造服务端套接字ServerSocket对象，标识当服务器请求处理线程全满时，用于临时存放已完成三次握手的请求的队列的最大长度。如果未设置或所设置的值小于1，Java将使用默认值50。
-            //Option是为了NioServerSocketChannel设置的，用来接收传入连接的
-            .option(ChannelOption.SO_BACKLOG, 128)
+            .option(ChannelOption.SO_REUSEADDR, true)
+            .childOption(ChannelOption.TCP_NODELAY, true)
+            .childOption(ChannelOption.SO_SNDBUF, 1024*64)
+            .childOption(ChannelOption.SO_RCVBUF, 1024*64)
             .childHandler(new ChannelInitializer<SocketChannel>() {
                 @Override
-                public void initChannel(SocketChannel ch) throws Exception {
-                    // server端接收到的是httpRequest，所以要使用HttpRequestDecoder进行解码
-                    ch.pipeline().addLast("http-decoder", new HttpRequestDecoder());
-                    //将多个消息转换为单一的FullHttpRequest或FullHttpResponse对象
-                    ch.pipeline().addLast("http-aggregator", new HttpObjectAggregator(65535));
-                    // server端发送的是httpResponse，所以要使用HttpResponseEncoder进行编码
-                    ch.pipeline().addLast("http-encoder", new HttpResponseEncoder());
-                    //解决大数据包传输问题，用于支持异步写大量数据流并且不需要消耗大量内存也不会导致内存溢出错误( OutOfMemoryError )。
-                    //仅支持ChunkedInput类型的消息。也就是说，仅当消息类型是ChunkedInput时才能实现ChunkedWriteHandler提供的大数据包传输功能
-                    ch.pipeline().addLast("http-chunked", new ChunkedWriteHandler());//解决大码流的问题
-                    ch.pipeline().addLast("http-server", new HttpServerHandler());
+                protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    socketChannel.pipeline().addLast(new HttpRequestDecoder());
+                    socketChannel.pipeline().addLast(new HttpResponseEncoder());
+                    socketChannel.pipeline().addLast(new ChunkedWriteHandler());
+                    socketChannel.pipeline().addLast(new HttpObjectAggregator(100 * 1024 * 1024));
+                    socketChannel.pipeline().addLast(new HttpServerHandler());
                 }
-
             });
 
         try {
