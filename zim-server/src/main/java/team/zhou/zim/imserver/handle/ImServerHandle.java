@@ -1,4 +1,4 @@
-package team.zhou.zim.handle.im;
+package team.zhou.zim.imserver.handle;
 
 
 import java.net.InetAddress;
