@@ -26,9 +26,7 @@ public class ImServerHandle extends ChannelInboundHandlerAdapter {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent idleStateEvent = (IdleStateEvent) evt;
             if (idleStateEvent.state() == IdleState.READER_IDLE) {
-
                 log.info("定时检测客户端端是否存活");
-
                 IHeartBeatHandler heartBeatHandler = BeanFactoryUtils.getBean(ServerHeartBeatHandlerImpl.class) ;
                 heartBeatHandler.process(ctx) ;
             }
@@ -51,7 +49,7 @@ public class ImServerHandle extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        log.info("收到客户端消息:{}", msg);
+        log.info("收到客户端消息:\n{}", msg);
         // todo 根据客户端消息发送目标，将消息发送给目标 client
         super.channelRead(ctx, msg);
     }

@@ -1,5 +1,6 @@
-package team.zhou.zim.client;
+package team.zhou.zim.client.handle.im;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -14,8 +15,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
-import team.zhou.zim.client.handle.im.ImClientHandle;
-import team.zhou.zim.client.handle.im.ImClientHandleInitializer;
+import team.zhou.zim.client.service.AccountService;
+import team.zhou.zim.common.model.LoginResult;
 import team.zhou.zim.common.protocol.ZIMRequestProto;
 
 /**
@@ -31,8 +32,17 @@ public class ImClient {
 
     private SocketChannel channel;
 
+    @Autowired
+    private AccountService accountService;
+
     @PostConstruct
     private void init() {
+        // 登录
+        LoginResult loginResult = accountService.login("zhouxinghang", "123456");
+        if (loginResult == null) {
+            log.error("启动 zim client 失败,原因:登录失败");
+            return;
+        }
 
         Bootstrap bootstrap = new Bootstrap()
             .group(GROUP)
@@ -41,7 +51,7 @@ public class ImClient {
 
         try {
             // todo 需要先登录，然后根据登录返回的连接，进行长连接
-            ChannelFuture future = bootstrap.connect("127.0.0.1", nettyPort).sync();
+            ChannelFuture future = bootstrap.connect(loginResult.getServerIp(), loginResult.getServerPort()).sync();
             if (future.isSuccess()) {
                 log.info("启动 zim client 成功");
                 channel = (SocketChannel) future.channel();
@@ -60,6 +70,6 @@ public class ImClient {
 
     public void sendMsg(ZIMRequestProto.ZIMReqProto reqProto) {
         ChannelFuture future = channel.writeAndFlush(reqProto);
-        future.addListener(future1 -> log.info("客户端发送消息成功,msg:{}", reqProto));
+        future.addListener(future1 -> log.info("客户端发送消息成功,msg:\n{}", reqProto));
     }
 }

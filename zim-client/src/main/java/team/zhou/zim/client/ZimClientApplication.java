@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import lombok.extern.slf4j.Slf4j;
+import team.zhou.zim.client.handle.im.ImClient;
 import team.zhou.zim.common.protocol.CommandType;
 import team.zhou.zim.common.protocol.ZIMRequestProto;
 
@@ -26,7 +27,6 @@ public class ZimClientApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        imClient.sendStringMsg("测试消息" + "\r\n");
         ZIMRequestProto.ZIMReqProto reqProto = ZIMRequestProto.ZIMReqProto.newBuilder()
             .setRequestId(111)
             .setMsg("testMsg")
